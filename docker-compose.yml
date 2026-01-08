@@ -1,0 +1,19 @@
+services:
+  golangbase-devops:
+    build:
+      context: ./dockerfiles
+      dockerfile: golang-base.Dockerfile
+    volumes:
+      # Container volumes
+      - devops_history:/root/bash_history
+      - tenv:/root/.tenv
+      # Volume in the repo rather than copying it (saves time on start)
+      - ./:/root/repo
+      # Just in case we have any ssh to deal with
+      - $HOME/.ssh:/root/.ssh
+      # enable aws access
+      - ~/.aws:/root/.aws
+
+volumes:
+  devops_history:
+  tenv:
