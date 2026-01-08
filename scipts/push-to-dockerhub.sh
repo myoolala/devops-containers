@@ -22,6 +22,8 @@ buildAndPush() {
     docker push 5pmgrass/tenviac:$2-linux-aarch64
     docker tag $2-linux-aarch64 5pmgrass/tenviac:$2
     docker push 5pmgrass/tenviac:$2
+    docker tag $2-linux-aarch64 5pmgrass/tenviac:latest
+    docker push 5pmgrass/tenviac:latest
 }
 
 cd ../
