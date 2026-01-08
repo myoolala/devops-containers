@@ -27,10 +27,16 @@ buildAndPush() {
 }
 
 cd ../
+
 if [[ "$1" == "" ]]; then
+    echo "Need a tag version to use"
+    exit 1
+fi
+
+if [[ "$2" == "" ]]; then
     echo "Need a tenv version to use"
     exit 1
 fi
 
-buildAndPush "golang-base.Dockerfile" "golang-$1" "--build-arg TENV_VERSION=v$1"
-buildAndPush "golang-base.Dockerfile" "$1" "--build-arg TENV_VERSION=v$1"
+buildAndPush "golang-base.Dockerfile" "golang-$1" "--build-arg TENV_VERSION=v$2"
+buildAndPush "golang-base.Dockerfile" "$1" "--build-arg TENV_VERSION=v$2"
