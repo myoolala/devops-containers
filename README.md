@@ -7,6 +7,7 @@ I've built this container in so many repos that I'm finally pushing it to a publ
 * packer
 * aws cli
 * sops
+* TF Docs
 
 These are all the services I regularly used and should grow with time. This container is not meant to be deployed but instead for local developer only.
 
