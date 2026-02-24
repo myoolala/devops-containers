@@ -12,18 +12,15 @@ buildAndPush() {
         exit 1
     fi
 
+    docker buildx create --use --name multiarch-builder || docker buildx use multiarch-builder
+    docker buildx inspect --bootstrap
+
     # Cuz my mac
-    # docker build --platform linux/amd64 -f "dockerfiles/$1" -t $2-linux/amd64 $3 ./dockerfiles 
-    # docker push 5pmgrass/tenviac:$2-linux/amd64
-    echo "Building aarch64"
-    docker build --platform linux/aarch64 -f "dockerfiles/$1" -t $2-linux-aarch64 $3 ./dockerfiles
-    echo "pushing aarch64"
-    docker tag $2-linux-aarch64 5pmgrass/tenviac:$2-linux-aarch64
-    docker push 5pmgrass/tenviac:$2-linux-aarch64
-    docker tag $2-linux-aarch64 5pmgrass/tenviac:$2
-    docker push 5pmgrass/tenviac:$2
-    docker tag $2-linux-aarch64 5pmgrass/tenviac:latest
-    docker push 5pmgrass/tenviac:latest
+    # echo "Building linux/amd64"
+    docker buildx build --platform linux/amd64,linux/aarch64 -f "dockerfiles/$1" \
+        -t 5pmgrass/tenviac:$2 \
+        -t 5pmgrass/tenviac:latest \
+        $3 ./dockerfiles --push
 }
 
 cd ../
