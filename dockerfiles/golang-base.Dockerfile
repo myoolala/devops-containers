@@ -1,9 +1,9 @@
 FROM golang
 
-ARG SOPS_VERSION=3.11.0
-ARG TENV_VERSION=v4.9.3
-ARG NVM_VERSION=0.40.3
-ARG TF_DOC_VERSION=0.21.0
+ARG SOPS_VERSION=3.13.3
+ARG TENV_VERSION=v4.15.1
+ARG NVM_VERSION=0.40.7
+ARG TF_DOC_VERSION=0.24.0
 ENV TENV_AUTO_INSTALL=true
 ENV HISTFILE=/root/bash_history/.bash_history
 
@@ -14,7 +14,7 @@ RUN <<EOF
 
     echo "Updating base container"
     apt-get -y update
-    apt-get -y install zip python3 python3-pip vim jq lsb-release
+    apt-get -y install zip python3 python3-pip vim jq lsb-release curl
     apt-get -y upgrade
     pip install awscli --break-system-packages
     apt-get clean all
@@ -27,10 +27,18 @@ RUN <<EOF
     echo "Installing SOPS"
     go install github.com/getsops/sops/v3/cmd/sops@v$SOPS_VERSION
     echo "Installing packer"
+    echo "Installing pi coding agent globally"
+    . ~/.nvm/nvm.sh
+    nvm install --lts
+    nvm use default
+    npm install -g @earendil-works/pi-coding-agent --allow-scripts="@google/genai","esbuild","protobufjs"
+    ln -s "$(nvm which node)" /usr/local/bin/node
+    ln -s "$(dirname $(nvm which node))/npm" /usr/local/bin/npm
+    ln -s "$(dirname $(nvm which node))/pi" /usr/local/bin/pi
     wget -O - https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list
     apt update && apt install packer
-    go install github.com/terraform-docs/terraform-docs@v0.21.0
+    go install github.com/terraform-docs/terraform-docs@v${TF_DOC_VERSION}
     echo 'alias tf="tofu"' >> ~/.bashrc
     echo 'alias tfi="tofu init"' >> ~/.bashrc
     echo 'alias tfp="tofu plan"' >> ~/.bashrc
